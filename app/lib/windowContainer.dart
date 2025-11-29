@@ -5,6 +5,10 @@ class WindowContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: const Center(child: Text('Window Container')));
+    return MaterialApp(
+      title: 'Code Transfer',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: Scaffold(body: const Center(child: Text('Window Container'))),
+    );
   }
 }

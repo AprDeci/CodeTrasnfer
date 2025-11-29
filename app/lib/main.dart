@@ -15,12 +15,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Code Transfer',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: UniversalPlatform.isMobile ? MobileContainer() : WindowContainer(),
-    );
+    return UniversalPlatform.isAndroid
+        ? const MobileContainer()
+        : const WindowContainer();
   }
 }
