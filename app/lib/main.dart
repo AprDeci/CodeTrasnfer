@@ -15,8 +15,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UniversalPlatform.isAndroid
-        ? const MobileContainer()
-        : const WindowContainer();
+    return UniversalPlatform.isDesktop || UniversalPlatform.isWeb
+        ? MaterialApp.router(
+            title: 'Code Transfer',
+            theme: ThemeData(primarySwatch: Colors.blue),
+            routerConfig: router, // ← 重点！！！
+          )
+        : const MobileContainer();
   }
 }
