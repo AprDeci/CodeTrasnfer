@@ -1,7 +1,6 @@
 import 'package:code_transfer/mobileContainer.dart';
 // import 'package:code_transfer/rust/frb_generated.dart';
 import 'package:code_transfer/router.dart';
-import 'package:code_transfer/windowContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_platform/universal_platform.dart';
 

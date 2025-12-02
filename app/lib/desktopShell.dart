@@ -1,6 +1,9 @@
 // windowContainer.dart  （全新替换你原来的内容）
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
+
+var logger = Logger();
 
 class DesktopShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -15,6 +18,7 @@ class DesktopShell extends StatelessWidget {
           NavigationRail(
             selectedIndex: navigationShell.currentIndex,
             onDestinationSelected: (index) {
+              logger.d('index: $index');
               // 关键：用 goBranch 切换分支，不会丢失每个 tab 的导航栈
               navigationShell.goBranch(
                 index,
