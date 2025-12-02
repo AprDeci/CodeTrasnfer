@@ -41,6 +41,7 @@ dependencies:
   go_router: ^17.0.0
   universal_platform: ^1.1.0
   logger: ^2.6.2
+  chinese_font_library: ^1.2.0
 
 dev_dependencies:
   build_runner: 2.7.1

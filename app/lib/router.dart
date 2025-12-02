@@ -1,5 +1,6 @@
 import 'package:code_transfer/bloc/cubit/counter_cubit.dart';
 import 'package:code_transfer/desktopShell.dart';
+import 'package:code_transfer/page/homePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,12 +19,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/home',
-              builder: (context, state) => Center(
-                child: TextButton(
-                  onPressed: () => context.go('/home/counter'),
-                  child: const Text('Home'),
-                ),
-              ),
+              builder: (context, state) => new HomePage(),
               routes: [
                 GoRoute(
                   path: 'counter',
