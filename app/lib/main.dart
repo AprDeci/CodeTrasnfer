@@ -8,9 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:universal_platform/universal_platform.dart';
 
 Future<void> main() async {
-  // RustLib.init();
   WidgetsFlutterBinding.ensureInitialized();
-  //await RustLib.init();
+  await RustLib.init();
   runApp(MyApp());
 }
 

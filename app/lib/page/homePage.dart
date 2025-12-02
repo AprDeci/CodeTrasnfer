@@ -1,5 +1,8 @@
+import 'package:code_transfer/bloc/cubit/key_pair_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -36,24 +39,56 @@ class HomePage extends StatelessWidget {
               color: theme.cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    Text('本机设备ID', style: theme.textTheme.labelMedium),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Phone-XYZ123',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton.tonalIcon(
-                      icon: const Icon(Icons.copy),
-                      label: const Text('复制'),
-                      onPressed: () {},
-                    )
-                  ],
+                child: BlocBuilder<KeyPairCubit, KeyPairState>(
+                  builder: (context, state) {
+                    final isLoading = state.status == KeyPairStatus.loading ||
+                        state.status == KeyPairStatus.initial;
+                    final hasError = state.status == KeyPairStatus.failure;
+                    final hasKey =
+                        state.status == KeyPairStatus.success && state.keyPair != null;
+
+                    final displayText = () {
+                      if (isLoading) {
+                        return '正在生成密钥...';
+                      }
+                      if (hasError) {
+                        return '生成失败：${state.errorMessage ?? ''}';
+                      }
+                      if (hasKey) {
+                        return state.keyPair!.publicKey;
+                      }
+                      return '暂无密钥';
+                    }();
+
+                    return Column(
+                      children: [
+                        Text('本机设备ID', style: theme.textTheme.labelMedium),
+                        const SizedBox(height: 8),
+                        SelectableText(
+                          displayText,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        FilledButton.tonalIcon(
+                          icon: const Icon(Icons.copy),
+                          label: const Text('复制'),
+                          onPressed: hasKey
+                              ? () {
+                                  final key = state.keyPair!.publicKey;
+                                  Clipboard.setData(ClipboardData(text: key));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('已复制到剪贴板')),
+                                  );
+                                }
+                              : null,
+                        )
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

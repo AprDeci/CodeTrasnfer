@@ -1,4 +1,5 @@
 import 'package:code_transfer/bloc/cubit/counter_cubit.dart';
+import 'package:code_transfer/bloc/cubit/key_pair_cubit.dart';
 import 'package:code_transfer/desktopShell.dart';
 import 'package:code_transfer/page/homePage.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +20,10 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/home',
-              builder: (context, state) => new HomePage(),
+              builder: (context, state) => BlocProvider(
+                create: (context) => KeyPairCubit()..generate(),
+                child: const HomePage(),
+              ),
               routes: [
                 GoRoute(
                   path: 'counter',
