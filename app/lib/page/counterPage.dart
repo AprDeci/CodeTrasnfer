@@ -23,6 +23,7 @@ class CounterPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
+                heroTag: Object(),
               child: Icon(Icons.add),
               onPressed: () => context.read<CounterCubit>().increment(),
             ),
@@ -30,6 +31,7 @@ class CounterPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 5.0),
             child: FloatingActionButton(
+    heroTag: Object(),
               child: Icon(Icons.remove),
               onPressed: () => context.read<CounterCubit>().decrement(),
             ),

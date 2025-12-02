@@ -1,12 +1,13 @@
 import 'package:code_transfer/bloc/cubit/counter_cubit.dart';
 import 'package:code_transfer/desktopShell.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:code_transfer/page/counterPage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/home',
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, child) {
@@ -15,13 +16,23 @@ final router = GoRouter(
       branches: [
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/', builder: (context, state) => Text('Home')),
             GoRoute(
-              path: '/counter',
-              builder: (context, state) => BlocProvider(
-                create: (context) => CounterCubit(),
-                child: CounterPage(),
+              path: '/home',
+              builder: (context, state) => Center(
+                child: TextButton(
+                  onPressed: () => context.go('/home/counter'),
+                  child: const Text('Home'),
+                ),
               ),
+              routes: [
+                GoRoute(
+                  path: 'counter',
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => CounterCubit(),
+                    child: const CounterPage(),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -29,14 +40,37 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: '/business',
-              builder: (context, state) => Text('Business'),
-            ),
-            GoRoute(
-              path: '/business/counter',
-              builder: (context, state) => BlocProvider(
-                create: (context) => CounterCubit(),
-                child: CounterPage(),
+              builder: (context, state) => const Center(
+                child: Text('Business'),
               ),
+              routes: [
+                GoRoute(
+                  path: 'counter',
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => CounterCubit(),
+                    child: const CounterPage(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/school',
+              builder: (context, state) => const Center(
+                child: Text('School'),
+              ),
+              routes: [
+                GoRoute(
+                  path: 'counter',
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => CounterCubit(),
+                    child: const CounterPage(),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
