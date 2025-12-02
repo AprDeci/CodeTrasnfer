@@ -1,5 +1,6 @@
 import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:code_transfer/mobileContainer.dart';
+import 'package:code_transfer/page/homePage.dart';
 // import 'package:code_transfer/rust/frb_generated.dart';
 import 'package:code_transfer/router.dart';
 import 'package:code_transfer/rust/frb_generated.dart';
@@ -25,6 +26,6 @@ class MyApp extends StatelessWidget {
               textTheme: const TextTheme().useSystemChineseFont(Brightness.light)),
             routerConfig: router, // ← 重点！！！
           )
-        : const MobileContainer();
+        : const HomePage();
   }
 }
