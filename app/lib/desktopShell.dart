@@ -1,51 +1,27 @@
-// windowContainer.dart  （全新替换你原来的内容）
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
-
-var logger = Logger();
+import 'package:universal_platform/universal_platform.dart';
 
 class DesktopShell extends StatelessWidget {
-  final StatefulNavigationShell navigationShell;
+  final Widget child;
 
-  const DesktopShell({super.key, required this.navigationShell});
+  const DesktopShell({super.key, this.child = const SizedBox.shrink()});
+
+  bool get _isDesktopLike => UniversalPlatform.isDesktop || UniversalPlatform.isWeb;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          NavigationRail(
-            selectedIndex: navigationShell.currentIndex,
-            onDestinationSelected: (index) {
-              logger.d('index: $index');
-              // 关键：用 goBranch 切换分支，不会丢失每个 tab 的导航栈
-              navigationShell.goBranch(
-                index,
-                // 第一次点这个 tab 时才跳到初始页面，防止已经 push 了很多层时被重置
-                initialLocation: index == navigationShell.currentIndex,
-              );
-            },
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Home'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.business),
-                label: Text('Business'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.school),
-                label: Text('School'),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
+    if (!_isDesktopLike) {
+      return child;
+    }
 
-          // 内容区：自动显示当前分支的页面
-          Expanded(child: navigationShell),
-        ],
+    final theme = Theme.of(context);
+    return ColoredBox(
+      color: theme.colorScheme.surface,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: SizedBox.expand(child: child),
+        ),
       ),
     );
   }
