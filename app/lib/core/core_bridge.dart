@@ -128,7 +128,6 @@ class LanCoreBridge implements CoreBridge {
     final socket = await RawDatagramSocket.bind(
       InternetAddress.anyIPv4,
       discoveryPort,
-      reusePort: true,
       reuseAddress: true,
     );
     socket.broadcastEnabled = true;
@@ -175,6 +174,10 @@ class LanCoreBridge implements CoreBridge {
         isReachable: true,
       );
       _discoveryController.add(device);
+      final isResponse = decoded['isResponse'] == true;
+      if (!isResponse) {
+        _sendAnnounce(target: datagram.address, isResponse: true);
+      }
     } catch (error, stackTrace) {
       _logger.w(
         'Failed to parse discovery packet',
@@ -184,7 +187,7 @@ class LanCoreBridge implements CoreBridge {
     }
   }
 
-  void _sendAnnounce() {
+  void _sendAnnounce({InternetAddress? target, bool isResponse = false}) {
     final socket = _udpSocket;
     if (socket == null) {
       return;
@@ -195,9 +198,11 @@ class LanCoreBridge implements CoreBridge {
       alias: _alias,
       port: port,
       deviceType: _deviceTypeString(),
+      isResponse: isResponse,
     );
     final data = utf8.encode(jsonEncode(packet.toJson()));
-    socket.send(data, _broadcastAddress, discoveryPort);
+    final destination = target ?? _broadcastAddress;
+    socket.send(data, destination, discoveryPort);
   }
 
   @override
@@ -290,12 +295,14 @@ class _DiscoveryPacket {
     required this.alias,
     required this.port,
     required this.deviceType,
+    this.isResponse = false,
   });
 
   final String deviceId;
   final String alias;
   final int port;
   final String deviceType;
+  final bool isResponse;
 
   static const kind = 'code_transfer_discovery';
 
@@ -305,6 +312,7 @@ class _DiscoveryPacket {
         'alias': alias,
         'port': port,
         'deviceType': deviceType,
+        'isResponse': isResponse,
         'timestamp': DateTime.now().toIso8601String(),
       };
 }
