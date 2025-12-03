@@ -1,13 +1,11 @@
-import 'package:code_transfer/bloc/cubit/key_pair_cubit.dart';
 import 'package:code_transfer/bloc/discovery/discovery_bloc.dart';
 import 'package:code_transfer/bloc/server/server_bloc.dart';
 import 'package:code_transfer/bloc/sync/sync_bloc.dart';
 import 'package:code_transfer/core/models/core_device.dart';
+import 'package:code_transfer/core/models/device_type.dart';
 import 'package:code_transfer/core/models/incoming_payload.dart';
-import 'package:code_transfer/rust/api/model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatelessWidget {
@@ -60,8 +58,6 @@ class HomePage extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     children: [
-                      _buildKeyPairCard(context, theme, colorScheme),
-                      const SizedBox(height: 32),
                       _buildDiscoverySection(context),
                       const SizedBox(height: 24),
                       _buildSyncSection(context),
@@ -82,74 +78,6 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildKeyPairCard(
-    BuildContext context,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      color: theme.cardColor,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: BlocBuilder<KeyPairCubit, KeyPairState>(
-          builder: (context, state) {
-            final isLoading = state.status == KeyPairStatus.loading ||
-                state.status == KeyPairStatus.initial;
-            final hasError = state.status == KeyPairStatus.failure;
-            final hasKey =
-                state.status == KeyPairStatus.success && state.keyPair != null;
-
-            final displayText = () {
-              if (isLoading) {
-                return '正在生成密钥...';
-              }
-              if (hasError) {
-                return '生成失败：${state.errorMessage ?? ''}';
-              }
-              if (hasKey) {
-                return state.keyPair!.publicKey;
-              }
-              return '暂无密钥';
-            }();
-
-            return Column(
-              children: [
-                Text('本机设备 ID', style: theme.textTheme.labelMedium),
-                const SizedBox(height: 8),
-                SelectableText(
-                  displayText,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FilledButton.tonalIcon(
-                  icon: const Icon(Icons.copy),
-                  label: const Text('复制'),
-                  onPressed: hasKey
-                      ? () {
-                          final key = state.keyPair!.publicKey;
-                          Clipboard.setData(ClipboardData(text: key));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('已复制到剪贴板')),
-                          );
-                        }
-                      : null,
-                )
-              ],
-            );
-          },
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:code_transfer/rust/api/model.dart';
+import 'device_type.dart';
 
 class CoreDevice {
   final String id;

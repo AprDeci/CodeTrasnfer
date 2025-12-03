@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:code_transfer/core/models/core_device.dart';
+import 'package:code_transfer/core/models/device_type.dart';
 import 'package:code_transfer/core/models/incoming_payload.dart';
-import 'package:code_transfer/rust/api/model.dart';
 import 'package:logger/logger.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
@@ -317,8 +317,8 @@ class _DiscoveryPacket {
       };
 }
 
-class MockRustCoreBridge implements CoreBridge {
-  MockRustCoreBridge({Logger? logger}) : _logger = logger ?? Logger();
+class MockCoreBridge implements CoreBridge {
+  MockCoreBridge({Logger? logger}) : _logger = logger ?? Logger();
 
   final Logger _logger;
   final _discoveryController = StreamController<CoreDevice>.broadcast();

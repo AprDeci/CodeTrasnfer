@@ -1,5 +1,4 @@
 import 'package:code_transfer/bloc/cubit/counter_cubit.dart';
-import 'package:code_transfer/bloc/cubit/key_pair_cubit.dart';
 import 'package:code_transfer/bloc/discovery/discovery_bloc.dart';
 import 'package:code_transfer/bloc/server/server_bloc.dart';
 import 'package:code_transfer/bloc/sync/sync_bloc.dart';
@@ -22,7 +21,6 @@ final router = GoRouter(
         },
         child: MultiBlocProvider(
           providers: [
-            BlocProvider(create: (context) => KeyPairCubit()..generate()),
             BlocProvider(
               create: (context) => DiscoveryBloc(
                 context.read<CoreRepository>(),
