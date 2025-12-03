@@ -1,5 +1,9 @@
 import 'package:code_transfer/bloc/cubit/counter_cubit.dart';
 import 'package:code_transfer/bloc/cubit/key_pair_cubit.dart';
+import 'package:code_transfer/bloc/discovery/discovery_bloc.dart';
+import 'package:code_transfer/bloc/server/server_bloc.dart';
+import 'package:code_transfer/bloc/sync/sync_bloc.dart';
+import 'package:code_transfer/core/core_repository.dart';
 import 'package:code_transfer/page/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,9 +15,31 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/home',
-      builder: (context, state) => BlocProvider(
-        create: (context) => KeyPairCubit()..generate(),
-        child: const HomePage(),
+      builder: (context, state) => RepositoryProvider(
+        create: (context) => CoreRepository(),
+        dispose: (repository) {
+          repository.dispose();
+        },
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => KeyPairCubit()..generate()),
+            BlocProvider(
+              create: (context) => DiscoveryBloc(
+                context.read<CoreRepository>(),
+              )..add(const DiscoveryStarted()),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  ServerBloc(context.read<CoreRepository>())..add(
+                    const ServerStarted(),
+                  ),
+            ),
+            BlocProvider(
+              create: (context) => SyncBloc(context.read<CoreRepository>()),
+            ),
+          ],
+          child: const HomePage(),
+        ),
       ),
       routes: [
         GoRoute(
