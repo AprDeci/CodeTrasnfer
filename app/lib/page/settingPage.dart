@@ -14,7 +14,6 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardColor = theme.colorScheme.surfaceVariant;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +25,7 @@ class _SettingPageState extends State<SettingPage> {
         children: [
           _buildSectionTitle('通知设置', theme),
           _buildSectionCard(
-            cardColor,
+            theme,
             children: [
               _buildSwitchTile(
                 icon: Icons.notifications_active_outlined,
@@ -53,7 +52,7 @@ class _SettingPageState extends State<SettingPage> {
           const SizedBox(height: 24),
           _buildSectionTitle('连接与设备', theme),
           _buildSectionCard(
-            cardColor,
+            theme,
             children: [
               _buildSimpleTile(
                 icon: Icons.computer_outlined,
@@ -83,14 +82,15 @@ class _SettingPageState extends State<SettingPage> {
     );
   }
 
-  Widget _buildSectionCard(Color cardColor, {required List<Widget> children}) {
-    return Container(
+  Widget _buildSectionCard(ThemeData theme, {required List<Widget> children}) {
+    return Card(
       margin: const EdgeInsets.only(top: 8),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+      elevation: 0,
+      color: theme.cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        children: children,
       ),
-      child: Column(children: children),
     );
   }
 
