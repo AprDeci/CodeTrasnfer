@@ -4,16 +4,17 @@ import 'package:code_transfer/bloc/server/server_bloc.dart';
 import 'package:code_transfer/bloc/sync/sync_bloc.dart';
 import 'package:code_transfer/core/core_repository.dart';
 import 'package:code_transfer/page/homePage.dart';
+import 'package:code_transfer/page/settingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:code_transfer/page/counterPage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/',
   routes: [
     GoRoute(
-      path: '/home',
+      path: '/',
       builder: (context, state) => RepositoryProvider(
         create: (context) => CoreRepository(),
         dispose: (repository) {
@@ -41,12 +42,14 @@ final router = GoRouter(
       ),
       routes: [
         GoRoute(
-          path: 'counter',
+          path: '/counter',
           builder: (context, state) => BlocProvider(
             create: (context) => CounterCubit(),
             child: const CounterPage(),
           ),
         ),
+        GoRoute(path: '/setting',
+        builder: (context, state) => const SettingPage())
       ],
     ),
     GoRoute(
