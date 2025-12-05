@@ -8,9 +8,12 @@ class HiveService {
 
   static const String stateBoxKey = 'statebox';
   static const String devicesBoxKey = 'devicesbox';
+  static const String settingsBoxKey = 'settingsbox';
 
   late Box _stateBoxInstance;
   late Box _devicesBoxInstance;
+  late Box _settingsBoxInstance;
+
   bool _isInitialized = false;
 
   HiveService._internal();
@@ -19,6 +22,7 @@ class HiveService {
     if (!_isInitialized) {
       _stateBoxInstance = await Hive.openBox(stateBoxKey);
       _devicesBoxInstance = await Hive.openBox(devicesBoxKey);
+      _settingsBoxInstance = await Hive.openBox(settingsBoxKey);
       _isInitialized = true;
     }
   }
@@ -34,5 +38,8 @@ class HiveService {
   }
 
   Box get stateBox => _stateBoxInstance;
+
   Box get devicesBox => _devicesBoxInstance;
+
+  Box get settingsBox => _settingsBoxInstance;
 }
