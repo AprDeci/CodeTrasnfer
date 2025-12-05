@@ -55,7 +55,7 @@ class LanCoreBridge implements CoreBridge {
   Timer? _announceTimer;
   int _listeningPort;
 
-  String _deviceId;
+  late String _deviceId;
   final String _alias = _resolveAlias();
 
   // 配合hive 持久化存储_deviceId
@@ -67,6 +67,7 @@ class LanCoreBridge implements CoreBridge {
       _deviceId = const Uuid().v4();
       await HiveService.instance.stateBox.put('deviceId', _deviceId);
     }
+    _logger.i('Device ID: $_deviceId');
   }
 
   @override
