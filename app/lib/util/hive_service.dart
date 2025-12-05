@@ -2,24 +2,37 @@ import 'package:code_transfer/core/models/core_device.dart';
 import 'package:hive_ce/hive.dart';
 
 class HiveService {
-  static final stateBoxKey = 'statebox';
-  static final devicesBoxKey = 'devicesbox';
+  static final HiveService _instance = HiveService._internal();
 
-  static final HiveService instance = HiveService._();
+  static HiveService get instance => _instance;
 
-  HiveService._();
+  static const String stateBoxKey = 'statebox';
+  static const String devicesBoxKey = 'devicesbox';
 
-  Future<Box> get _stateBox async => await Hive.openBox(stateBoxKey);
+  late Box _stateBoxInstance;
+  late Box _devicesBoxInstance;
+  bool _isInitialized = false;
 
-  Future<Box> get _devicesBox async => await Hive.openBox(devicesBoxKey);
+  HiveService._internal();
 
-  Future<void> saveState(String key, value) async {
-    final box = await _stateBox;
-    await box.put(key, value);
+  Future<void> init() async {
+    if (!_isInitialized) {
+      _stateBoxInstance = await Hive.openBox(stateBoxKey);
+      _devicesBoxInstance = await Hive.openBox(devicesBoxKey);
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> saveState(String key, dynamic value) async {
+    if (!_isInitialized) await init();
+    await _stateBoxInstance.put(key, value);
   }
 
   Future<void> saveDevice(CoreDevice device) async {
-    final box = await _devicesBox;
-    await box.put(device.id, device);
+    if (!_isInitialized) await init();
+    await _devicesBoxInstance.put(device.id, device);
   }
+
+  Box get stateBox => _stateBoxInstance;
+  Box get devicesBox => _devicesBoxInstance;
 }
