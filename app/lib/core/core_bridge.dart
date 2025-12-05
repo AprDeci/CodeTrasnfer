@@ -56,18 +56,21 @@ class LanCoreBridge implements CoreBridge {
   int _listeningPort;
 
   late String _deviceId;
+  Future<void>? _deviceIdReady;
   final String _alias = _resolveAlias();
 
   // 配合hive 持久化存储_deviceId
-  _generateSelfInfo() async {
-    final deviceId = await HiveService.instance.stateBox.get('deviceId');
-    if (deviceId != null) {
-      _deviceId = deviceId;
-    } else {
-      _deviceId = const Uuid().v4();
-      await HiveService.instance.stateBox.put('deviceId', _deviceId);
-    }
-    _logger.i('Device ID: $_deviceId');
+  Future<void> _ensureDeviceId() {
+    return _deviceIdReady ??= () async {
+      final stored = HiveService.instance.stateBox.get('deviceId');
+      if (stored is String && stored.isNotEmpty) {
+        _deviceId = stored;
+      } else {
+        _deviceId = const Uuid().v4();
+        await HiveService.instance.stateBox.put('deviceId', _deviceId);
+      }
+      _logger.i('Device ID: $_deviceId');
+    }();
   }
 
   @override
@@ -81,7 +84,7 @@ class LanCoreBridge implements CoreBridge {
     if (_httpServer != null && _listeningPort == port) {
       return;
     }
-    await _generateSelfInfo();
+    await _ensureDeviceId();
     final server = await HttpServer.bind(
       InternetAddress.anyIPv4,
       port,
@@ -142,6 +145,7 @@ class LanCoreBridge implements CoreBridge {
     if (_udpSocket != null) {
       return;
     }
+    await _ensureDeviceId();
     final socket = await RawDatagramSocket.bind(
       InternetAddress.anyIPv4,
       discoveryPort,
