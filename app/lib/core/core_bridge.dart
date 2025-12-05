@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:code_transfer/core/models/core_device.dart';
@@ -34,9 +35,10 @@ class LanCoreBridge implements CoreBridge {
     this.discoveryPort = 53318,
     this.discoveryInterval = const Duration(seconds: 3),
     this.serverFallbackPort = 53317,
-  })  : _logger = logger ?? Logger(),
-        _broadcastAddress = broadcastAddress ?? InternetAddress('255.255.255.255'),
-        _listeningPort = serverFallbackPort;
+  }) : _logger = logger ?? Logger(),
+       _broadcastAddress =
+           broadcastAddress ?? InternetAddress('255.255.255.255'),
+       _listeningPort = serverFallbackPort;
 
   final Logger _logger;
   final InternetAddress _broadcastAddress;
@@ -54,6 +56,11 @@ class LanCoreBridge implements CoreBridge {
 
   final String _deviceId = const Uuid().v4();
   final String _alias = _resolveAlias();
+
+  void _generateSelfInfo async() {
+    // 配合hive 持久化存储_deviceId
+
+  }
 
   @override
   Stream<CoreDevice> get discoveryStream => _discoveryController.stream;
@@ -92,7 +99,8 @@ class LanCoreBridge implements CoreBridge {
             ? jsonDecode(content) as Map<String, dynamic>
             : <String, dynamic>{};
 
-        final sourceIp = request.connectionInfo?.remoteAddress.address ?? 'unknown';
+        final sourceIp =
+            request.connectionInfo?.remoteAddress.address ?? 'unknown';
         final deviceName = payload['deviceName'] as String?;
 
         _incomingController.add(
@@ -162,8 +170,8 @@ class LanCoreBridge implements CoreBridge {
       final port = (decoded['port'] as num?)?.toInt() ?? serverFallbackPort;
       final alias = decoded['alias'] as String? ?? 'Unknown';
       final deviceType = _parseDeviceType(decoded['deviceType'] as String?);
-      final id = decoded['deviceId'] as String? ??
-          '${datagram.address.address}:$port';
+      final id =
+          decoded['deviceId'] as String? ?? '${datagram.address.address}:$port';
       final device = CoreDevice(
         id: id,
         alias: alias,
@@ -230,10 +238,7 @@ class LanCoreBridge implements CoreBridge {
       request.write(jsonEncode(enrichedPayload));
       final response = await request.close();
       if (response.statusCode >= 400) {
-        throw HttpException(
-          '发送失败：${response.statusCode}',
-          uri: uri,
-        );
+        throw HttpException('发送失败：${response.statusCode}', uri: uri);
       }
     } finally {
       client.close(force: true);
@@ -267,7 +272,9 @@ class LanCoreBridge implements CoreBridge {
     if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS) {
       return DeviceType.mobile.name;
     }
-    if (UniversalPlatform.isWindows || UniversalPlatform.isLinux || UniversalPlatform.isMacOS) {
+    if (UniversalPlatform.isWindows ||
+        UniversalPlatform.isLinux ||
+        UniversalPlatform.isMacOS) {
       return DeviceType.desktop.name;
     }
     return DeviceType.headless.name;
@@ -307,14 +314,14 @@ class _DiscoveryPacket {
   static const kind = 'code_transfer_discovery';
 
   Map<String, dynamic> toJson() => {
-        'kind': kind,
-        'deviceId': deviceId,
-        'alias': alias,
-        'port': port,
-        'deviceType': deviceType,
-        'isResponse': isResponse,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
+    'kind': kind,
+    'deviceId': deviceId,
+    'alias': alias,
+    'port': port,
+    'deviceType': deviceType,
+    'isResponse': isResponse,
+    'timestamp': DateTime.now().toIso8601String(),
+  };
 }
 
 class MockCoreBridge implements CoreBridge {
@@ -373,10 +380,7 @@ class MockCoreBridge implements CoreBridge {
       IncomingPayload(
         sourceIp: targetIp,
         deviceName: 'Echo-$targetIp',
-        data: {
-          'type': 'echo',
-          'payload': payload,
-        },
+        data: {'type': 'echo', 'payload': payload},
         receivedAt: DateTime.now(),
       ),
     );

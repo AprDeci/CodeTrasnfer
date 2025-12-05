@@ -2,9 +2,12 @@ import 'package:chinese_font_library/chinese_font_library.dart';
 import 'package:code_transfer/desktopShell.dart';
 import 'package:code_transfer/router.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
