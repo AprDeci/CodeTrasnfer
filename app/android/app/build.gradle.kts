@@ -5,14 +5,6 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-apply(from = "../../rust_builder/cargokit/gradle/plugin.gradle")
-
-val cargokitExtension = extensions.getByName("cargokit")
-cargokitExtension.javaClass.getMethod("setManifestDir", String::class.java)
-    .invoke(cargokitExtension, "../../rust")
-cargokitExtension.javaClass.getMethod("setLibname", String::class.java)
-    .invoke(cargokitExtension, "rust_lib_localsend_app")
-
 android {
     namespace = "com.example.code_transfer"
     compileSdk = flutter.compileSdkVersion
