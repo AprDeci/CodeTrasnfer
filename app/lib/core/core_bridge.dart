@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:code_transfer/core/models/core_device.dart';
 import 'package:code_transfer/core/models/device_type.dart';
 import 'package:code_transfer/core/models/incoming_payload.dart';
+import 'package:code_transfer/util/hive_service.dart';
 import 'package:logger/logger.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
@@ -54,12 +55,18 @@ class LanCoreBridge implements CoreBridge {
   Timer? _announceTimer;
   int _listeningPort;
 
-  final String _deviceId = const Uuid().v4();
+  String _deviceId;
   final String _alias = _resolveAlias();
 
-  void _generateSelfInfo async() {
-    // 配合hive 持久化存储_deviceId
-
+  // 配合hive 持久化存储_deviceId
+  _generateSelfInfo() async {
+    final deviceId = await HiveService.instance.stateBox.get('deviceId');
+    if (deviceId != null) {
+      _deviceId = deviceId;
+    } else {
+      _deviceId = const Uuid().v4();
+      await HiveService.instance.stateBox.put('deviceId', _deviceId);
+    }
   }
 
   @override
@@ -73,6 +80,7 @@ class LanCoreBridge implements CoreBridge {
     if (_httpServer != null && _listeningPort == port) {
       return;
     }
+    await _generateSelfInfo();
     final server = await HttpServer.bind(
       InternetAddress.anyIPv4,
       port,
