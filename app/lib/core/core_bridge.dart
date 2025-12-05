@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:code_transfer/core/models/core_device.dart';
 import 'package:code_transfer/core/models/device_type.dart';
 import 'package:code_transfer/core/models/incoming_payload.dart';
+import 'package:code_transfer/util/device_info_service.dart';
+import 'package:code_transfer/util/device_info_service.dart';
 import 'package:code_transfer/util/hive_service.dart';
 import 'package:logger/logger.dart';
 import 'package:universal_platform/universal_platform.dart';
@@ -271,6 +273,14 @@ class LanCoreBridge implements CoreBridge {
   }
 
   static String _resolveAlias() {
+    try {
+      final deviceName = DeviceInfoService.instance.deviceName;
+      if (deviceName != null && deviceName.isNotEmpty) {
+        return deviceName;
+      }
+    } catch (_) {
+      // Device info service 未初始化或访问失败则回退到平台信息
+    }
     final hostname = Platform.isAndroid ? null : Platform.localHostname;
     if (hostname != null && hostname.isNotEmpty) {
       return hostname;

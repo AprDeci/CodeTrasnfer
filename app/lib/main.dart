@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:code_transfer/util/hive_service.dart';
+import 'package:code_transfer/util/device_info_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await HiveService.instance.init();
+  await DeviceInfoService.instance.init();
   runApp(const MyApp());
 }
 
